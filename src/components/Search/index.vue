@@ -3,19 +3,22 @@
     <div class="search_input">
       <div class="search_input_wrapper">
         <i class="iconfont icon-sousuo"></i>
-        <input type="text">
+        <input type="text"
+               v-model="searchValue"
+               @keyup.enter='getMovieList'>
       </div>
     </div>
     <div class="search_result">
       <h3>电影/电视剧/综艺</h3>
       <ul>
-        <li>
-          <div class="img"><img src="/images/movie_1.jpg"></div>
+        <li v-for="item in searchList"
+            :key='item.id'>
+          <div class="img"><img :src="item.img | setWH('128.180')"></div>
           <div class="info">
-            <p><span>无名之辈</span><span>8.5</span></p>
-            <p>A Cool Fish</p>
-            <p>剧情,喜剧,犯罪</p>
-            <p>2018-11-16</p>
+            <p><span>{{item.nm}}</span><span>{{item.sc}}</span></p>
+            <p>{{item.enm}}</p>
+            <p>{{item.cat}}</p>
+            <p>{{item.rt}}</p>
           </div>
         </li>
       </ul>
@@ -25,7 +28,28 @@
 
 <script>
 export default {
-
+  name: 'Search',
+  data () {
+    return {
+      searchList: [],
+      searchValue: ''
+    }
+  },
+  activated () {
+    this.getMovieList()
+  },
+  methods: {
+    async getMovieList () {
+      const cityId = this.$store.state.city.id
+      const { status, data } = await this.axios.get('/api/searchList?cityId=' + cityId + '&kw=' + this.searchValue)
+      console.log(data)
+      if (status === 200) {
+        if (data.data.movies) {
+          this.searchList = data.data.movies.list
+        }
+      }
+    }
+  }
 }
 </script>
 

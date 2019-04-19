@@ -1,13 +1,14 @@
 <template>
   <div class="movie_body">
     <ul>
-      <li>
-        <div class="pic_show"><img src="/images/movie_1.jpg"></div>
+      <li v-for="item in comingList"
+          :key="item.id">
+        <div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
         <div class="info_list">
-          <h2>无名之辈</h2>
-          <p><span class="person">17746</span> 人想看</p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>2018-11-30上映</p>
+          <h2>{{item.nm}}</h2>
+          <p><span class="person">{{item.wish}}</span> 人想看</p>
+          <p>主演: {{item.star}}</p>
+          <p>{{item.showInfo}}</p>
         </div>
         <div class="btn_pre">
           预售
@@ -19,7 +20,25 @@
 
 <script>
 export default {
-
+  name: 'ComingSoon',
+  data () {
+    return {
+      comingList: []
+    }
+  },
+  activated () {
+    this.getComingList()
+  },
+  methods: {
+    async getComingList () {
+      const cityId = this.$store.state.city.id
+      const { status, data } = await this.axios.get('/api/movieComingList?cityId=' + cityId)
+      console.log(data)
+      if (status === 200) {
+        this.comingList = data.data.comingList
+      }
+    }
+  }
 }
 </script>
 
